@@ -1,8 +1,66 @@
 # Allages
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/allages`. To experiment with that code, run `bin/console` for an interactive prompt.
+Keeping a changelog file for an application with many collaborators is hard due to conflicts that often occur. In order to avoid this messy situation, a directory based approach, with changes contained in their own file each, is a better alternative. No conflicts arise when merging feature/hotfix branches. Also, by using a simple script, one can generate a single CHANGELOG.md file by simply parsing the directory structure for entries.
 
-TODO: Delete this and the text above, and describe your gem
+This gem was created to help maintain this changelog structure in a RoR project.
+
+The directory tree convention looks like this (sample):
+
+```
+  changelogs
+  ├── 1.0.3
+  │   └── d4fe5be8-7237-4b40-854a-0e09f38be8ae.yml
+  ├── 1.0.4
+  │   ├── 531985ac-f3b4-4ba4-a257-31dabfdd9200.yml
+  │   └── bf701293-1620-4997-a728-3a50342407b8.yml
+  └── Unreleased
+      ├── 50267ff1-1047-4302-9843-19eeb79deea2.yml
+      └── d4fe5be8-7237-4b40-854a-0e09f38be8ae.yml
+```
+
+each subfolders under the /changelogs folder is considered a version. "Unreleased" is by convention the folder to keep all the new changelog entries that have not yet made it into a version.
+
+Each yaml file is a changelog entry. The name of the file has no effect on the entry description. If you use the handy rake task in order to create the entry, then a uuid named file is created which helps with resolving accidental conflicts. But you are free to use any other naming scheme, if you like. What is inside the yaml files is what matters:
+
+```
+date: 2019-08-22
+type: Added
+description: This is a nice addition to our app
+author: Tolis
+issue: 11
+dependencies:
+  - ~> backend-1.0.2
+  - -> solr-5.5
+```
+
+The above is a typical changelog entry.
+
+By using the markdown generator we get something like this:
+
+```
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## Unreleased
+### Added
+- Another nice addition
+### Fixed
+- This was a bug, it is now fixed, issue: 67
+
+## 1.0.3
+### Fixed
+- This was a bug, it is now fixed, issue: 67
+
+## 1.0.4
+### Added
+- This is a nice addition to our app, issue: 11, dependencies: ~> backend-1.0.2, -> solr-5.5
+### Changed
+- This was wrong, so we changed it, issue: 89
+```
+
 
 ## Installation
 
@@ -20,15 +78,91 @@ Or install it yourself as:
 
     $ gem install allages
 
+
+And generate the default tree structure with:
+
+```
+$ rails generate allages:init
+      create  config/initializers/allages.rb
+      create  changelogs
+      create  changelogs/Unreleased
+```
+
+You can change the default allages configuration in your rails app by using an initializer. Like so:
+```
+Allages.configure do |config|
+  config.input_dir = 'changelogs'
+  config.output_file = :stdout
+  config.include_unreleased = true
+  config.header = <<~END
+  # Changelog
+  All notable changes to this project will be documented in this file.
+
+  The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+  and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+  END
+end
+```
+
 ## Usage
 
-TODO: Write usage instructions here
+### Creating a new (unreleased) entry
 
-## Development
+Just invoke the proper rake task with:
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+```
+$ rake allages:new_entry
+```
+And by giving the proper entry data:
+```
+Type (a)dded, (c)hanged, (f)ixed, (d)eprecated, (r)emoved, (s)ecurity: a
+Description: This is something new
+Author: Tolis
+Issue: 90
+Dependencies (comma seperated): one dep, then another one
+created new unreleased entry changelogs/Unreleased/f062f1cc-0d97-461f-928f-5c108c406d3f.yml
+```
+a new yaml file will created in the changelogs/Unreleased directory.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+### Creating a new version
+
+Creating a new version section for our changelog is as easy as creating a directory with the version name within /changelogs. But you can use a rake task for that:
+```
+$ rake allages:new_version
+Version name: 1.0.4
+created directory changelogs/1.0.4
+```
+By using the rake task you get a aditional hidden .meta.yml file within the created directory. This is for storing extra metadata (date, dependencies) regarding this version. You can edit this file manually. The extra metadata will be included in the version header of the generated markdown file. Leave the yaml values commented out if you don't want any metadata on your version descriptions.
+
+### Generating the CHANGELOG.md
+
+As expected, there's a rake task for that:
+```
+$ rake allages:generate
+```
+The markdown will be output on the console if the reserved `:stdout` keyword is used, or in a file if a string was given in the configuration.
+
+### Version metadata
+
+By putting a .meta.yml file in the version folder you can add metadata such as date and dependencies in your changelog version/section headers:
+
+```
+date: 2019-08-22
+dependencies:
+  - dependency 1
+  - dependency 2
+```
+Then the version header generated will look like this:
+```
+## 1.0.4 - 2019-08-22 - dependencies: dependency 1, dependency 2
+```
+
+## TODO
+
+* A rake task to move entries from Unrealased to a new version
+* Write tests
+* Make it work for non RoR projects
 
 ## Contributing
 
