@@ -78,7 +78,7 @@ module Allages
       end
     end
 
-    if Allages.config.output_file == :stdout
+    if Allages.config.output_file.to_sym == :stdout
       puts markdown
     else
       open(Allages.config.output_file, 'w') do |f|
