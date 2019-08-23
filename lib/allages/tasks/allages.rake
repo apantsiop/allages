@@ -1,4 +1,14 @@
+require 'rails/generators'
+require 'pry'
+
 namespace :allages do
+
+  desc 'Initialize allages'
+  task :init => :environment do
+    puts defined?(Rails) ? "Rails exists" : "No rails"
+    binding.pry
+    Rails::Generators.invoke 'plain_init'
+  end
 
   desc 'Generate changelog'
   task :generate => :environment do

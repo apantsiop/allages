@@ -1,7 +1,8 @@
 require 'rails'
 require 'rails/generators'
 require 'allages'
-require 'generators/init_generator' if defined?(Rails)
+require 'generators/init_generator'
+require 'generators/config_generator'
 
 module Allages
   class Railtie < Rails::Railtie
