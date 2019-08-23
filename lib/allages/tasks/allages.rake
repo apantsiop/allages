@@ -6,8 +6,7 @@ namespace :allages do
   desc 'Initialize allages'
   task :init => :environment do
     puts defined?(Rails) ? "Rails exists" : "No rails"
-    binding.pry
-    Rails::Generators.invoke 'plain_init'
+    Rails::Generators.invoke 'yaml'
   end
 
   desc 'Generate changelog'

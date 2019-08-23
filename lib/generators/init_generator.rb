@@ -1,5 +1,4 @@
 require 'rails/generators/base'
-require 'pry'
 
 module Allages
   class InitGenerator < Rails::Generators::Base
