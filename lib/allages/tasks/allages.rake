@@ -1,4 +1,3 @@
-require 'rails/generators'
 require 'pry'
 
 namespace :allages do
@@ -6,7 +5,7 @@ namespace :allages do
   desc 'Initialize allages'
   task :init => :environment do
     puts defined?(Rails) ? "Rails exists" : "No rails"
-    Rails::Generators.invoke 'yaml'
+    Rails::Generators.invoke 'allages:yaml'
   end
 
   desc 'Generate changelog'

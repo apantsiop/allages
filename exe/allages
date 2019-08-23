@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'rake'
+require 'rails/generators'
 require 'allages'
 
 spec = Gem::Specification.find_by_name 'allages'
