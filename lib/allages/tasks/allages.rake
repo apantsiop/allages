@@ -1,5 +1,3 @@
-require 'pry'
-
 namespace :allages do
 
   desc 'Initialize allages'
