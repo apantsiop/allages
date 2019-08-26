@@ -1,10 +1,20 @@
 # Allages
 
+#### What Allages is?
+
+This gem was created to help maintain a changelog in a project.
+
+It can be used as a standalone utility for any kind of application or embedded as a gem in a RoR project.
+
+Allages generates a markdown changelog based on the keepachangelog.com format.
+
+"Allages" translates to "changes" in greek.
+
+#### So, why not use a simple markdown file?
+
 Keeping a changelog file for an application with many collaborators is hard due to conflicts that often occur. In order to avoid this messy situation, a directory based approach, with changes contained in their own file each, is a better alternative. No conflicts arise when merging feature/hotfix branches. Also, by using a simple script, one can generate a single CHANGELOG.md file by simply parsing the directory structure for entries.
 
-This gem was created to help maintain this changelog structure in a RoR project.
-
-The directory tree convention looks like this (sample):
+The directory tree convention that  looks like this (sample):
 
 ```
   changelogs
@@ -64,6 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Installation
 
+##### For RoR projects
+
 Add this line to your application's Gemfile:
 
 ```ruby
@@ -74,12 +86,14 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
+##### For all other projects
 
     $ gem install allages
 
 
 And generate the default tree structure with:
+
+##### For RoR projects
 
 ```
 $ rails generate allages:init
@@ -88,7 +102,21 @@ $ rails generate allages:init
       create  changelogs/Unreleased
 ```
 
-You can change the default allages configuration in your rails app by using an initializer. Like so:
+##### For all other projects
+
+```
+$ allages init
+      create  .allages.yml
+      create  changelogs
+      create  changelogs/Unreleased
+```
+
+You can change the default allages configuration in your rails app.
+
+
+##### For RoR projects
+
+... by using an initializer. Like so:
 ```
 Allages.configure do |config|
   config.input_dir = 'changelogs'
@@ -105,14 +133,38 @@ Allages.configure do |config|
 end
 ```
 
+##### For all other projects
+
+by editing the settings in the generated .allages.yml file:
+```
+input_dir: 'changelogs'
+output_file: 'CHANGELOG.md'
+include_unreleased: false
+header: |+
+  # Changelog
+  All notable changes to this project will be documented in this file.
+
+  The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+  and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+
+```
+
+
 ## Usage
 
 ### Creating a new (unreleased) entry
 
 Just invoke the proper rake task with:
+##### For RoR projects
 
 ```
 $ rake allages:new_entry
+```
+##### For all other projects
+
+```
+$ allages new_entry
 ```
 And by giving the proper entry data:
 ```
@@ -128,8 +180,15 @@ a new yaml file will created in the changelogs/Unreleased directory.
 ### Creating a new version
 
 Creating a new version section for our changelog is as easy as creating a directory with the version name within /changelogs. But you can use a rake task for that:
+##### For RoR projects
 ```
 $ rake allages:new_version
+```
+##### For all other projects
+```
+$ allages new_version
+```
+```
 Version name: 1.0.4
 created directory changelogs/1.0.4
 ```
@@ -138,8 +197,13 @@ By using the rake task you get a aditional hidden .meta.yml file within the crea
 ### Generating the CHANGELOG.md
 
 As expected, there's a rake task for that:
+##### For RoR projects
 ```
 $ rake allages:generate
+```
+##### For all other projects
+```
+$ allages generate
 ```
 The markdown will be output on the console if the reserved `:stdout` keyword is used, or in a file if a string was given in the configuration.
 
@@ -162,7 +226,7 @@ Then the version header generated will look like this:
 
 * A rake task to move entries from Unrealased to a new version
 * Write tests
-* Make it work for non RoR projects
+* Break the rails dependency
 
 ## Contributing
 
